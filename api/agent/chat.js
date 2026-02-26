@@ -108,8 +108,7 @@ async function streamFromAnthropic(messages, systemPrompt, corsHeaders) {
   });
 
   if (!resp.ok) {
-    const err = await resp.text();
-    console.error('Anthropic error:', resp.status, err);
+    console.error('Anthropic error:', resp.status);
     return null;
   }
 
@@ -135,12 +134,12 @@ async function streamFromAnthropic(messages, systemPrompt, corsHeaders) {
             if (text) {
               await writer.write(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
             }
-          } catch { /* skip malformed */ }
+          } catch { /* skip */ }
         }
       }
     } finally {
-      await writer.write(encoder.encode('data: [DONE]\n\n'));
-      await writer.close();
+      try { await writer.write(encoder.encode('data: [DONE]\n\n')); } catch {}
+      try { await writer.close(); } catch {}
     }
   })();
 
