@@ -591,7 +591,7 @@ export class DataLoaderManager implements AppModule {
     this.ctx.allNews = collectedNews;
     this.ctx.initialLoadComplete = true;
     maybeShowDownloadBanner();
-    mountCommunityWidget();
+    // mountCommunityWidget();
     updateAndCheck([
       { type: 'news', region: 'global', count: collectedNews.length },
     ]).then(anomalies => {
