@@ -16,6 +16,7 @@ import { dataFreshness } from '@/services/data-freshness';
 import { loadFromStorage, parseMapUrlState, saveToStorage, isMobileDevice } from '@/utils';
 import type { ParsedMapUrlState } from '@/utils';
 import { SignalModal, IntelligenceGapBadge } from '@/components';
+import { AgentSidebar } from '@/components/AgentSidebar';
 import { isDesktopRuntime } from '@/services/runtime';
 import { trackEvent, trackDeeplinkOpened } from '@/services/analytics';
 import { preloadCountryGeometry, getCountryNameByCode } from '@/services/country-geometry';
@@ -218,6 +219,7 @@ export class App {
       signalModal: null,
       statusPanel: null,
       searchModal: null,
+      agentSidebar: null,
       findingsBadge: null,
       playbackControl: null,
       exportPanel: null,
@@ -326,6 +328,7 @@ export class App {
 
     // Phase 2: Shared UI components
     this.state.signalModal = new SignalModal();
+    this.state.agentSidebar = new AgentSidebar();
     this.state.signalModal.setLocationClickHandler((lat, lon) => {
       this.state.map?.setCenter(lat, lon, 4);
     });

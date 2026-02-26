@@ -160,6 +160,8 @@ export class EventHandlerManager implements AppModule {
     }
     this.ctx.tvMode?.destroy();
     this.ctx.tvMode = null;
+    this.ctx.agentSidebar?.destroy();
+    this.ctx.agentSidebar = null;
     this.ctx.unifiedSettings?.destroy();
     this.ctx.unifiedSettings = null;
   }
@@ -168,6 +170,9 @@ export class EventHandlerManager implements AppModule {
     document.getElementById('searchBtn')?.addEventListener('click', () => {
       this.callbacks.updateSearchIndex();
       this.ctx.searchModal?.open();
+    });
+    document.getElementById('agentBtn')?.addEventListener('click', () => {
+      this.ctx.agentSidebar?.open();
     });
 
     document.getElementById('copyLinkBtn')?.addEventListener('click', async () => {
