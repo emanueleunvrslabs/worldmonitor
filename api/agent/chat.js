@@ -204,6 +204,9 @@ async function streamFromGroq(messages, systemPrompt, corsHeaders) {
         }
       }
     } finally {
+      try { await writer.write(encoder.encode('data: [DONE]
+
+')); } catch { /* already written */ }
       await writer.close();
     }
   })();
