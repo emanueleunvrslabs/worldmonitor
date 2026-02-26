@@ -173,7 +173,11 @@ async function streamFromGroq(messages, systemPrompt, corsHeaders) {
     signal: AbortSignal.timeout(30000),
   });
 
-  if (!resp.ok) return null;
+  if (!resp.ok) {
+    const err = await resp.text();
+    console.error('Groq error:', resp.status, err);
+    return null;
+  }
 
   const { readable, writable } = new TransformStream();
   const writer = writable.getWriter();
@@ -190,10 +194,7 @@ async function streamFromGroq(messages, systemPrompt, corsHeaders) {
         for (const line of chunk.split('\n')) {
           if (!line.startsWith('data: ')) continue;
           const data = line.slice(6).trim();
-          if (data === '[DONE]') {
-            await writer.write(encoder.encode('data: [DONE]\n\n'));
-            continue;
-          }
+          if (data === '[DONE]') continue;
           try {
             const parsed = JSON.parse(data);
             const text = parsed?.choices?.[0]?.delta?.content;
@@ -204,9 +205,7 @@ async function streamFromGroq(messages, systemPrompt, corsHeaders) {
         }
       }
     } finally {
-      try { await writer.write(encoder.encode('data: [DONE]
-
-')); } catch { /* already written */ }
+      try { await writer.write(encoder.encode('data: [DONE]\n\n')); } catch { /* already written */ }
       await writer.close();
     }
   })();
@@ -241,6 +240,20 @@ export default async function handler(req) {
   }
 
   const { message, history = [], mode = 'chat' } = body;
+
+  const VALID_MODES = ['chat', 'briefing', 'signals'];
+  if (!VALID_MODES.includes(mode)) {
+    return new Response(JSON.stringify({ error: 'Invalid mode' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
+
+  if (message && message.length > 4000) {
+    return new Response(JSON.stringify({ error: 'Message too long (max 4000 chars)' }), {
+      status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
+    });
+  }
+
   if (!message && mode === 'chat') {
     return new Response(JSON.stringify({ error: 'message required' }), {
       status: 400, headers: { 'Content-Type': 'application/json', ...corsHeaders },
