@@ -171,7 +171,7 @@ export class EventHandlerManager implements AppModule {
       this.callbacks.updateSearchIndex();
       this.ctx.searchModal?.open();
     });
-    document.getElementById('agentBtn')?.addEventListener('click', () => {
+    document.getElementById('glassAgentBtn')?.addEventListener('click', () => {
       this.ctx.agentSidebar?.open();
     });
 
@@ -224,6 +224,28 @@ export class EventHandlerManager implements AppModule {
           }
         });
       });
+
+    // Glass nav variant buttons
+    this.ctx.container.querySelectorAll<HTMLAnchorElement>('.glass-nav-item[data-glass-variant]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const variant = link.dataset.glassVariant;
+        if (variant && variant !== SITE_VARIANT) {
+          if (isLocalDev || this.ctx.isDesktopApp) {
+            trackVariantSwitch(SITE_VARIANT, variant);
+            localStorage.setItem('worldmonitor-variant', variant);
+            window.location.reload();
+          } else {
+            const prodUrls: Record<string, string> = {
+              full: 'https://worldmonitor.app',
+              tech: 'https://tech.worldmonitor.app',
+              finance: 'https://finance.worldmonitor.app',
+            };
+            if (prodUrls[variant]) window.location.href = prodUrls[variant];
+          }
+        }
+      });
+    });
     }
 
     const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -427,9 +449,9 @@ export class EventHandlerManager implements AppModule {
 
   setupStatusPanel(): void {
     this.ctx.statusPanel = new StatusPanel();
-    const headerLeft = this.ctx.container.querySelector('.header-left');
-    if (headerLeft) {
-      headerLeft.appendChild(this.ctx.statusPanel.getElement());
+    const mount = document.getElementById('glassStatusMount');
+    if (mount) {
+      mount.appendChild(this.ctx.statusPanel.getElement());
     }
   }
 
@@ -437,9 +459,9 @@ export class EventHandlerManager implements AppModule {
     if (SITE_VARIANT === 'tech' || SITE_VARIANT === 'finance' || SITE_VARIANT === 'happy') return;
 
     this.ctx.pizzintIndicator = new PizzIntIndicator();
-    const headerLeft = this.ctx.container.querySelector('.header-left');
-    if (headerLeft) {
-      headerLeft.appendChild(this.ctx.pizzintIndicator.getElement());
+    const mount = document.getElementById('glassPizzintMount');
+    if (mount) {
+      mount.appendChild(this.ctx.pizzintIndicator.getElement());
     }
   }
 

@@ -203,10 +203,15 @@ export class IntelligenceFindingsBadge {
   }
 
   private mount(): void {
-    const headerRight = document.querySelector('.header-right');
-    if (headerRight) {
-      this.badge.appendChild(this.dropdown);
-      headerRight.insertBefore(this.badge, headerRight.firstChild);
+    this.badge.appendChild(this.dropdown);
+    const glassMount = document.getElementById('glassNotificationsMount');
+    if (glassMount) {
+      glassMount.appendChild(this.badge);
+    } else {
+      const headerRight = document.querySelector('.header-right');
+      if (headerRight) {
+        headerRight.insertBefore(this.badge, headerRight.firstChild);
+      }
     }
   }
 
