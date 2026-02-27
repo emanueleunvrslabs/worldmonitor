@@ -90,133 +90,112 @@ async function streamFromAnthropic(messages, systemPrompt, corsHeaders) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return null;
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'claude-opus-4-6',
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages,
-      stream: true,
-    }),
-    signal: AbortSignal.timeout(30000),
-  });
-
-  if (!resp.ok) {
-    console.error('Anthropic error:', resp.status);
+  let resp;
+  try {
+    resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'claude-opus-4-6',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages,
+        stream: false,
+      }),
+    });
+  } catch {
     return null;
   }
 
-  const { readable, writable } = new TransformStream();
-  const writer = writable.getWriter();
+  if (!resp.ok) return null;
+
+  let fullText = '';
+  try {
+    const data = await resp.json();
+    fullText = data?.content?.[0]?.text ?? '';
+  } catch {
+    return null;
+  }
+
   const encoder = new TextEncoder();
-
-  (async () => {
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        for (const line of chunk.split('\n')) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6).trim();
-          if (data === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(data);
-            const text = parsed?.delta?.text;
-            if (text) {
-              await writer.write(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
-            }
-          } catch { /* skip */ }
+  return new Response(
+    new ReadableStream({
+      start(controller) {
+        if (fullText) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: fullText })}\n\n`));
         }
-      }
-    } finally {
-      try { await writer.write(encoder.encode('data: [DONE]\n\n')); } catch {}
-      try { await writer.close(); } catch {}
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+      },
+    }),
+    {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'X-Accel-Buffering': 'no',
+        ...corsHeaders,
+      },
     }
-  })();
-
-  return new Response(readable, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'X-Accel-Buffering': 'no',
-      ...corsHeaders,
-    },
-  });
+  );
 }
 
 async function streamFromGroq(messages, systemPrompt, corsHeaders) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) return null;
 
-  const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'llama-3.1-70b-versatile',
-      messages: [{ role: 'system', content: systemPrompt }, ...messages],
-      max_tokens: 1024,
-      stream: true,
-    }),
-    signal: AbortSignal.timeout(30000),
-  });
-
-  if (!resp.ok) {
-    const err = await resp.text();
-    console.error('Groq error:', resp.status, err);
+  let resp;
+  try {
+    resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-70b-versatile',
+        messages: [{ role: 'system', content: systemPrompt }, ...messages],
+        max_tokens: 1024,
+        stream: false,
+      }),
+    });
+  } catch {
     return null;
   }
 
-  const { readable, writable } = new TransformStream();
-  const writer = writable.getWriter();
+  if (!resp.ok) return null;
+
+  let fullText = '';
+  try {
+    const data = await resp.json();
+    fullText = data?.choices?.[0]?.message?.content ?? '';
+  } catch {
+    return null;
+  }
+
   const encoder = new TextEncoder();
-
-  (async () => {
-    const reader = resp.body.getReader();
-    const decoder = new TextDecoder();
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        for (const line of chunk.split('\n')) {
-          if (!line.startsWith('data: ')) continue;
-          const data = line.slice(6).trim();
-          if (data === '[DONE]') continue;
-          try {
-            const parsed = JSON.parse(data);
-            const text = parsed?.choices?.[0]?.delta?.content;
-            if (text) {
-              await writer.write(encoder.encode(`data: ${JSON.stringify({ text })}\n\n`));
-            }
-          } catch { /* skip */ }
+  return new Response(
+    new ReadableStream({
+      start(controller) {
+        if (fullText) {
+          controller.enqueue(encoder.encode(`data: ${JSON.stringify({ text: fullText })}\n\n`));
         }
-      }
-    } finally {
-      try { await writer.write(encoder.encode('data: [DONE]\n\n')); } catch { /* already written */ }
-      await writer.close();
+        controller.enqueue(encoder.encode('data: [DONE]\n\n'));
+        controller.close();
+      },
+    }),
+    {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        'X-Accel-Buffering': 'no',
+        ...corsHeaders,
+      },
     }
-  })();
-
-  return new Response(readable, {
-    headers: {
-      'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
-      'X-Accel-Buffering': 'no',
-      ...corsHeaders,
-    },
-  });
+  );
 }
 
 export default async function handler(req) {
