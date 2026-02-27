@@ -451,10 +451,7 @@ export class EventHandlerManager implements AppModule {
       timestamp: Date.now(),
     }));
 
-    const headerRight = this.ctx.container.querySelector('.header-right');
-    if (headerRight) {
-      headerRight.insertBefore(this.ctx.exportPanel.getElement(), headerRight.firstChild);
-    }
+    // Export button removed from header
   }
 
   setupUnifiedSettings(): void {
@@ -508,10 +505,7 @@ export class EventHandlerManager implements AppModule {
       }
     });
 
-    const headerRight = this.ctx.container.querySelector('.header-right');
-    if (headerRight) {
-      headerRight.insertBefore(this.ctx.playbackControl.getElement(), headerRight.firstChild);
-    }
+    // Playback button removed from header
   }
 
   setupSnapshotSaving(): void {
