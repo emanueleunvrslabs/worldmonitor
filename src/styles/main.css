@@ -9653,7 +9653,7 @@ a.prediction-link:hover {
 
   /* Glass nav — compact mobile layout */
   .glass-nav-row {
-    margin: 6px 8px;
+    margin: calc(env(safe-area-inset-top, 0px) + 8px) 8px 6px;
     gap: 6px;
   }
 
