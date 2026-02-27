@@ -9504,11 +9504,11 @@ a.prediction-link:hover {
   .time-slider {
     top: calc(env(safe-area-inset-top, 0px) + 8px);
     left: calc(env(safe-area-inset-left, 0px) + 8px);
-    max-width: 200px;
-    overflow: hidden;
+    max-width: calc(100vw - 80px);
+    overflow-x: auto;
     scrollbar-width: none;
-    padding: 4px 8px;
-    gap: 6px;
+    padding: 4px 6px;
+    gap: 4px;
   }
 
   .time-slider::-webkit-scrollbar {
@@ -9516,16 +9516,41 @@ a.prediction-link:hover {
   }
 
   .time-slider-label {
-    display: flex;
-    padding: 8px 12px;
-    font-size: 11px;
+    display: none !important;
   }
 
   .time-slider-buttons {
-    flex-direction: column;
+    flex-direction: row !important;
     flex-wrap: nowrap;
     gap: 2px;
+    padding: 2px 4px;
+  }
+
+  /* DeckGL time slider mobile */
+  .deckgl-time-slider {
+    top: calc(env(safe-area-inset-top, 0px) + 8px);
+    left: calc(env(safe-area-inset-left, 0px) + 8px);
+    max-width: calc(100vw - 80px);
+    overflow-x: auto;
+    scrollbar-width: none;
+    border-radius: 999px;
+  }
+  .deckgl-time-slider::-webkit-scrollbar { display: none; }
+  .deckgl-time-slider .time-options {
+    flex-wrap: nowrap !important;
+    flex-direction: row !important;
+    gap: 1px;
     padding: 4px 6px;
+  }
+  .deckgl-time-slider .time-btn {
+    padding: 5px 8px;
+    font-size: 9px;
+    white-space: nowrap;
+  }
+
+  /* DeckGL layer toggles — hide on mobile */
+  .deckgl-layer-toggles {
+    display: none !important;
   }
 
   /* Larger map controls */
@@ -9535,11 +9560,19 @@ a.prediction-link:hover {
     font-size: 20px;
   }
 
+  /* DeckGL map controls mobile */
+  .deckgl-controls .map-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
   /* Time slider buttons */
   .time-btn {
     flex: 0 0 auto;
-    padding: 8px 12px;
-    min-height: 36px;
+    padding: 6px 10px;
+    min-height: 32px;
+    font-size: 10px;
   }
 
   /* Map popup positioning for mobile - ensure it's visible */
@@ -9616,6 +9649,69 @@ a.prediction-link:hover {
   .conflict-click-area {
     cursor: pointer;
     pointer-events: auto;
+  }
+
+  /* Glass nav — compact mobile layout */
+  .glass-nav-row {
+    margin: 6px 8px;
+    gap: 6px;
+  }
+
+  .glass-nav-left-mount {
+    position: static;
+  }
+
+  .glass-nav-center-group {
+    flex: 1;
+    min-width: 0;
+    gap: 4px;
+    margin: 0;
+  }
+
+  .glass-nav-tools {
+    position: static;
+    gap: 4px;
+  }
+
+  .glass-nav {
+    padding: 4px 6px;
+    gap: 2px;
+  }
+
+  .glass-nav-select {
+    font-size: 10px;
+    padding: 4px 20px 4px 8px;
+    max-width: 100px;
+  }
+
+  .glass-nav-item {
+    font-size: 11px;
+    padding: 5px 10px;
+  }
+
+  .glass-nav-divider {
+    display: none;
+  }
+
+  .glass-nav-agent {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  .glass-nav-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .glass-nav-status-mount {
+    display: none;
+  }
+
+  /* Hide less important nav icons on mobile */
+  #headerThemeToggle,
+  #fullscreenBtn {
+    display: none !important;
   }
 }
 
