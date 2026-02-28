@@ -196,6 +196,12 @@ function htmlVariantPlugin(): Plugin {
           /if\(v\)document\.documentElement\.dataset\.variant=v;/,
           `v='${activeVariant}';document.documentElement.dataset.variant=v;`
         );
+      } else {
+        // For 'full' variant: clear stale localStorage variant and force 'full'
+        result = result.replace(
+          /if\(v\)document\.documentElement\.dataset\.variant=v;/,
+          `v='full';document.documentElement.dataset.variant=v;`
+        );
       }
 
       // Desktop CSP: inject localhost wildcard for dynamic sidecar port.
