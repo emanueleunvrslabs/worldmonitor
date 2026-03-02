@@ -146,10 +146,10 @@ export function parseCoordinates(text: string): [number, number][] {
   const dms = /(\d{1,3})-(\d{1,2}(?:\.\d+)?)\s*([NS])\s+(\d{1,3})-(\d{1,2}(?:\.\d+)?)\s*([EW])/gi;
   let m: RegExpExecArray | null;
   while ((m = dms.exec(text)) !== null) {
-    let lat = parseInt(m[1], 10) + parseFloat(m[2]) / 60;
-    let lon = parseInt(m[4], 10) + parseFloat(m[5]) / 60;
-    if (m[3].toUpperCase() === 'S') lat = -lat;
-    if (m[6].toUpperCase() === 'W') lon = -lon;
+    let lat = parseInt(m[1]!, 10) + parseFloat(m[2]!) / 60;
+    let lon = parseInt(m[4]!, 10) + parseFloat(m[5]!) / 60;
+    if (m[3]!.toUpperCase() === 'S') lat = -lat;
+    if (m[6]!.toUpperCase() === 'W') lon = -lon;
     if (lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180) coords.push([lat, lon]);
   }
   return coords;

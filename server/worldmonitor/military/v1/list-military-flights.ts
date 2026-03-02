@@ -100,10 +100,10 @@ export async function listMilitaryFlights(
         if (!baseUrl) return null;
 
         const fetchBB = {
-          lamin: quantize(bb.southWest.latitude, BBOX_GRID_STEP) - BBOX_GRID_STEP / 2,
-          lamax: quantize(bb.northEast.latitude, BBOX_GRID_STEP) + BBOX_GRID_STEP / 2,
-          lomin: quantize(bb.southWest.longitude, BBOX_GRID_STEP) - BBOX_GRID_STEP / 2,
-          lomax: quantize(bb.northEast.longitude, BBOX_GRID_STEP) + BBOX_GRID_STEP / 2,
+          lamin: quantize(bb.southWest!.latitude, BBOX_GRID_STEP) - BBOX_GRID_STEP / 2,
+          lamax: quantize(bb.northEast!.latitude, BBOX_GRID_STEP) + BBOX_GRID_STEP / 2,
+          lomin: quantize(bb.southWest!.longitude, BBOX_GRID_STEP) - BBOX_GRID_STEP / 2,
+          lomax: quantize(bb.northEast!.longitude, BBOX_GRID_STEP) + BBOX_GRID_STEP / 2,
         };
         const params = new URLSearchParams();
         params.set('lamin', String(fetchBB.lamin));
