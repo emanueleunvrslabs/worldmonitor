@@ -119,6 +119,7 @@ export class PanelLayoutManager implements AppModule {
               <option value="america">${t('components.deckgl.views.americas')}</option>
               <option value="mena">${t('components.deckgl.views.mena')}</option>
               <option value="eu">${t('components.deckgl.views.europe')}</option>
+              <option value="italy">${t('components.deckgl.views.italy')}</option>
               <option value="asia">${t('components.deckgl.views.asia')}</option>
               <option value="latam">${t('components.deckgl.views.latam')}</option>
               <option value="africa">${t('components.deckgl.views.africa')}</option>
@@ -126,8 +127,8 @@ export class PanelLayoutManager implements AppModule {
             </select>
             <span class="glass-nav-divider"></span>
             <a href="#" class="glass-nav-item ${SITE_VARIANT === 'full' ? 'active' : ''}" data-glass-variant="full">World</a>
-            <a href="#" class="glass-nav-item ${SITE_VARIANT === 'finance' ? 'active' : ''}" data-glass-variant="finance">Finance</a>
-            <a href="#" class="glass-nav-item ${SITE_VARIANT === 'tech' ? 'active' : ''}" data-glass-variant="tech">Tech</a>
+            <a href="#" class="glass-nav-item ${SITE_VARIANT === 'italia' ? 'active' : ''}" data-glass-variant="italia">Italia</a>
+            <a href="#" class="glass-nav-item ${SITE_VARIANT === 'tech' ? 'active' : ''}" data-glass-variant="tech">AI</a>
             <span class="glass-nav-divider"></span>
             <button class="glass-nav-item glass-nav-agent" id="glassAgentBtn">⬡ Agent</button>
         </nav>
@@ -152,7 +153,7 @@ export class PanelLayoutManager implements AppModule {
         <div class="map-section" id="mapSection">
           <div class="panel-header">
             <div class="panel-header-left">
-              <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : t('panels.map')}</span>
+              <span class="panel-title">${SITE_VARIANT === 'tech' ? t('panels.techMap') : SITE_VARIANT === 'happy' ? 'Good News Map' : SITE_VARIANT === 'italia' ? 'Mappa Italia' : t('panels.map')}</span>
             </div>
             <span class="header-clock" id="headerClock"></span>
             <button class="map-pin-btn" id="mapPinBtn" title="${t('header.pinMap')}">
@@ -411,7 +412,7 @@ export class PanelLayoutManager implements AppModule {
     const economicPanel = new EconomicPanel();
     this.ctx.panels['economic'] = economicPanel;
 
-    if (SITE_VARIANT === 'full' || SITE_VARIANT === 'finance') {
+    if (SITE_VARIANT === 'full' || SITE_VARIANT === 'finance' || SITE_VARIANT === 'italia') {
       const tradePolicyPanel = new TradePolicyPanel();
       this.ctx.panels['trade-policy'] = tradePolicyPanel;
 

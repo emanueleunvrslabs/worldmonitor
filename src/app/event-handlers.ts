@@ -237,11 +237,14 @@ export class EventHandlerManager implements AppModule {
             window.location.reload();
           } else {
             const prodUrls: Record<string, string> = {
-              full: 'https://worldmonitor.app',
-              tech: 'https://tech.worldmonitor.app',
-              finance: 'https://finance.worldmonitor.app',
+              full: 'https://world.unvrslabs.dev',
+              italia: 'https://world.unvrslabs.dev',
+              tech: 'https://world.unvrslabs.dev',
             };
-            if (prodUrls[variant]) window.location.href = prodUrls[variant];
+            // All variants share the same domain — switch via localStorage + reload
+            trackVariantSwitch(SITE_VARIANT, variant);
+            localStorage.setItem('worldmonitor-variant', variant);
+            if (prodUrls[variant]) window.location.reload();
           }
         }
       });
