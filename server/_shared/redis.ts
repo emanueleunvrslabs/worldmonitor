@@ -97,7 +97,7 @@ const inflight = new Map<string, Promise<unknown>>();
 export async function cachedFetchJson<T>(
   key: string,
   ttlSeconds: number,
-  fetcher: () => Promise<T>,
+  fetcher: () => Promise<T | null>,
 ): Promise<T | null> {
   const cached = await getCachedJson(key);
   if (cached !== null) return cached as T;
@@ -132,7 +132,7 @@ export async function cachedFetchJson<T>(
 export async function cachedFetchJsonWithMeta<T>(
   key: string,
   ttlSeconds: number,
-  fetcher: () => Promise<T>,
+  fetcher: () => Promise<T | null>,
 ): Promise<{ data: T | null; source: 'cache' | 'fresh' }> {
   const cached = await getCachedJson(key);
   if (cached !== null) return { data: cached as T, source: 'cache' };
